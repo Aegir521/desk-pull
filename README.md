@@ -1,21 +1,23 @@
-# 桌面抽物 · Desk Pull
+# Desk Pull
 
-[在 Qoder Sites 上试玩](https://desk-pull-zvttmo3kjmf.qoder.zone/)
+**English** | [简体中文](README.zh-CN.md)
 
-桌上那颗黄球压着你要拿的东西。你可以先把球搬走，也可以从底下直接抽，看看球还能不能留在桌上。
+[Play on Qoder Sites](https://desk-pull-zvttmo3kjmf.qoder.zone/) · Game interface in Simplified Chinese
 
-这是为 2026 Qoder 高校创造力大赛 LifeHack 赛道制作的浏览器物理小游戏。用鼠标或手指按住物件拖动，收齐本桌指定颜色的目标就能过关。想试另一种拿法，点「同桌再来」即可恢复原来的摆放。星星记录完成程度，分数可以用来比较同一桌的两次尝试。
+A yellow ball rests on the piece you need. Do you move the ball first, or slide the piece out from underneath and see if the ball stays on the desk?
 
-## 本地试玩
+Desk Pull is a browser physics puzzle built for the LifeHack track of the 2026 Qoder competition. Drag objects with your mouse or finger to collect the pieces that match the target color. Select **同桌再来** (“Retry this desk”) to restore the same layout and try a different move. Stars show how well you cleared the desk, and your score lets you compare attempts on that layout.
 
-安装 Node.js 后，在项目目录运行：
+## Play locally
+
+With Node.js installed, run this command from the project directory:
 
 ```sh
 node server.mjs
 ```
 
-用浏览器打开 <http://127.0.0.1:4173/>。游戏静态文件都在 `web/` 下，物理引擎已随项目附带，无需安装 npm 依赖。
+Open <http://127.0.0.1:4173/> in your browser. The game and its physics engine are bundled in `web/`, so you can run it without installing npm packages.
 
-## 许可证
+## License
 
-游戏源码使用 [MIT 许可证](LICENSE)。物理引擎 [Matter.js](https://github.com/liabru/matter-js) 的许可见[随附文件](web/vendor/LICENSE-matter-js.txt)。
+Desk Pull uses the [MIT License](LICENSE). The bundled [Matter.js](https://github.com/liabru/matter-js) physics engine includes its [own license](web/vendor/LICENSE-matter-js.txt).
