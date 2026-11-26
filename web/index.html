@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>桌面抽物 · Desk Pull</title>
+<meta name="description" content="观察桌上物件的支撑关系，拖出目标，挑战同一张桌的不同拿法。">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='40' width='52' height='8' rx='3' fill='%23a06c3e'/%3E%3Crect x='14' y='26' width='30' height='12' rx='3' fill='%234a9fe8'/%3E%3Crect x='20' y='14' width='24' height='10' rx='3' fill='%23f2b33d'/%3E%3C/svg%3E">
+</head>
+<body>
+<div id="stage">
+  <canvas id="game"></canvas>
+
+  <header id="hud" class="hidden">
+    <div class="hud-left">
+      <div class="round-badge">第 <span id="roundNum">1</span> 桌 <span class="seed-tag" id="seedTag">#0000</span></div>
+      <div class="score-box">总分 <span id="totalScore">0</span><span class="round-score" id="roundScore"></span></div>
+    </div>
+    <div class="hud-objectives" id="objectives"></div>
+    <div class="hud-right">
+      <button class="icon-btn" id="soundBtn" title="声音开关" aria-label="声音开关">
+        <svg viewBox="0 0 24 24" class="ic-on"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" class="ic-off"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn" id="helpBtn" aria-haspopup="dialog" aria-controls="helpOverlay">规则</button>
+      <button class="icon-btn" id="levelsBtn" aria-haspopup="dialog" aria-controls="levelsDialog">关卡</button>
+      <button class="icon-btn" id="shuffleBtn" title="换个摆法（重开本桌）" aria-label="换个摆法">
+        <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4" stroke="currentColor" stroke-width="1.9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="comboBanner" class="hidden"></div>
+  <div id="toasts"></div>
+
+  <!-- 开局 -->
+  <div class="overlay" id="introOverlay">
+    <div class="panel intro-panel">
+      <div class="intro-art" aria-hidden="true">
+        <div class="mini-desk">
+          <div class="mini-item mi-a"></div>
+          <div class="mini-item mi-b"></div>
+          <div class="mini-item mi-c"></div>
+          <div class="mini-hand">✦</div>
+        </div>
+      </div>
+      <h1 class="game-title">桌面抽物</h1>
+      <p class="intro-how"><b>收下两件红色物品。</b><br>拖出桌沿后松手，或向上举过收取线。</p>
+      <p class="rotate-note">横握手机，桌面更宽。竖屏也能玩。</p>
+      <button class="btn btn-primary btn-big" id="startBtn">开 局</button>
+      <button class="btn btn-ghost" id="introLevels" aria-haspopup="dialog" aria-controls="levelsDialog">关卡</button>
+
+    </div>
+  </div>
+
+  <!-- 结算 -->
+  <div class="overlay hidden" id="settleOverlay">
+    <div class="panel settle-panel">
+      <div class="settle-stamp" id="settleStamp">过关</div>
+      <div class="star-row" id="starRow"></div>
+      <div class="star-caption" id="starCaption"></div>
+      <h2 id="settleTitle">这桌拿下了！</h2>
+      <p class="settle-highlight" id="settleHighlight"></p>
+      <p class="settle-hint" id="settleHint"></p>
+      <details id="scoreDetails"><summary>得分明细</summary><div class="settle-lines" id="settleLines"></div></details>
+      <div class="settle-foot">
+        <div class="settle-total">本桌得分 <span id="settleScore">0</span><span class="record-badge hidden" id="recordBadge">新纪录!</span></div>
+        <div class="score-meta">
+          <span>满分 <b id="scoreMax">0</b></span>
+          <span class="sm-dot">·</span>
+          <span>同桌最佳 <b id="scoreBest">—</b></span>
+        </div>
+        <div class="settle-btns" id="settleBtns"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 收手总结算 -->
+  <div class="overlay hidden" id="runendOverlay">
+    <div class="panel runend-panel">
+      <div class="settle-stamp stamp-gold">收手</div>
+      <h2>今晚的战利品</h2>
+      <div class="runend-big" id="runendScore">0</div>
+      <div class="runend-stats" id="runendStats"></div>
+      <button class="btn btn-primary btn-big" id="againBtn">重新开局</button>
+    </div>
+  </div>
+
+  <!-- 帮助 -->
+  <dialog class="panel help-panel" id="levelsDialog" aria-labelledby="levelsTitle">
+    <h2 id="levelsTitle">关卡</h2>
+    <p class="levels-note">六种挑战均可直接试玩。换个摆法仍是同一关，星数取该关最佳。</p>
+    <div id="levelChoices"></div>
+    <div class="levels-nav">
+      <form method="dialog"><button class="btn btn-primary">返回</button></form>
+    </div>
+  </dialog>
+  <dialog class="panel help-panel" id="helpOverlay" aria-labelledby="rulesTitle">
+    <h2 id="rulesTitle">规则</h2>
+    <p>收齐上方指定的目标。拖出桌沿，看到“松手收下”后松手；也可以向上举过收取线，直接收下。可以先搬挡物，只要目标还凑得齐，掉件后也能继续。</p>
+    <dl class="star-rules">
+      <dt>一星</dt><dd>收齐目标。</dd>
+      <dt>二星</dt><dd>收齐目标，全桌零坠落。</dd>
+      <dt>三星</dt><dd>在二星基础上保住所有带 ★ 的黄件，并完成一次冒险抽取。</dd>
+    </dl>
+    <p><b>冒险抽取</b>　从承重物下面抽走目标，上面的物件发生移动，最后仍留在桌上。</p>
+    <p><b>同桌得分</b>　每次主动拖动非目标物扣 30 分，并中断目标连取。拖回原位也算一次，松手后再拖会再扣。轻点或碰动旁边的物件不扣搬动分。重试优先比星数，同星再比分数。</p>
+    <form method="dialog"><button class="btn btn-primary" autofocus id="helpCloseBtn">继续游戏</button></form>
+  </dialog>
+</div>
+<script src="vendor/matter.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

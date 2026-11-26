@@ -1,0 +1,5 @@
+.qa/
+.playwright-mcp/
+*.bak
+*.qoder.site
+node_modules/
